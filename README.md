@@ -22,8 +22,9 @@ let product = Product { bx: "bx".to_string(), .. };
 let item = field!(product . B _ X);
 assert_eq!(item, "bx");
 
-fn get_match(ab: AB, xy: XY) -> impl Fn(&Product) -> &str  {
-    field!(ab,xy)
+/// macro generated method tp match on input enums to access field
+fn get_match(ab: AB, xy: XY) -> impl Fn(&Product) -> &String  {
+   todo!("...")
 }
 
 let item = get_match(B, X)(&product);

@@ -17,6 +17,16 @@ macro_rules! field_matcher {
                 (<$ab>::$i2, <$xy>::$j2) =>   field!(this . $i2 _ $j2),
             }
         }
+        ::paste::paste! {
+            fn [<$name _ mut>](ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
+                move |this| match (ab, xy) {
+                    (<$ab>::$i1, <$xy>::$j1) => field!(this . $i1 _ $j1),
+                    (<$ab>::$i2, <$xy>::$j1) =>  field!(this . $i2 _ $j1),
+                    (<$ab>::$i1, <$xy>::$j2) =>  field!(this . $i1 _ $j2),
+                    (<$ab>::$i2, <$xy>::$j2) =>   field!(this . $i2 _ $j2),
+                }
+            }
+        }
     };
 }
 
@@ -24,14 +34,14 @@ field_matcher!(get_match, Product, AB, XY, &str; A, B; X, Y);
 
 #[macro_export]
 macro_rules! field {
-    ($self:ident . $side:ident _ $kind:ident) => {
+    ($self:ident . $ab:ident _ $xy:ident) => {
         ::paste::paste! {
-            &$self.[<$side:snake _ $kind:snake>]
+            &$self.[<$ab:snake _ $xy:snake>]
         }
     };
-    (mut $self:ident . $side:ident _ $kind:ident) => {
+    (mut $self:ident . $ab:ident _ $xy:ident) => {
         ::paste::paste! {
-            &mut $self.[<$side:snake _ $kind:snake>]
+            &mut $self.[<$ab:snake _ $xy:snake>]
         }
     };
 }
