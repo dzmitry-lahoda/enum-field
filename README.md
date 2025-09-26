@@ -22,11 +22,11 @@ let product = Product { bx: "bx".to_string(), .. };
 let item = field!(product . B _ X);
 assert_eq!(item, "bx");
 
-fn do(ab: AB, xy: XY) -> |&Product| -> &str {
+fn get_match(ab: AB, xy: XY) -> impl Fn(&Product) -> &str  {
     field!(ab,xy)
 }
 
-let item = do(B, X)(&product);
+let item = get_match(B, X)(&product);
 assert_eq!(item, "bx");
 ```
 
