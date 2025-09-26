@@ -31,5 +31,5 @@ let item = get_match(B, X)(&product);
 assert_eq!(item, "bx");
 ```
 
-in generic way.
+in generic way via declarative macro.
 

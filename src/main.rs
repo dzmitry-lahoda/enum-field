@@ -1,3 +1,4 @@
+// unfortunately could not exand depth and at same time grabbing previous idents (tried tt muncher too)
 #[macro_export]
 macro_rules! field_matcher {
     ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident ) => {
@@ -30,8 +31,6 @@ macro_rules! field_matcher {
     };
 }
 
-field_matcher!(get_match, Product, AB, XY, &str; A, B; X, Y);
-
 #[macro_export]
 macro_rules! field {
     ($self:ident . $ab:ident _ $xy:ident) => {
@@ -45,6 +44,9 @@ macro_rules! field {
         }
     };
 }
+
+// in theory could make macro arounds enums to get all variants, but seems to intrusive for now (expecially if some enum is very generic for use case)
+field_matcher!(get_match, Product, AB, XY, &str; A, B; X, Y);
 
 #[derive(Clone, Copy)]
 pub enum AB {
