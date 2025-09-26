@@ -1,6 +1,6 @@
 // unfortunately could not exand depth and at same time grabbing previous idents (tried tt muncher too)
 #[macro_export]
-macro_rules! field_matcher {
+macro_rules! enum_field_match {
     ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident ) => {
         fn $name(ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
             move |this| match (ab, xy) {
@@ -32,7 +32,7 @@ macro_rules! field_matcher {
 }
 
 #[macro_export]
-macro_rules! field {
+macro_rules! enum_filed_use {
     ($self:ident . $ab:ident _ $xy:ident) => {
         ::paste::paste! {
             &$self.[<$ab:snake _ $xy:snake>]
@@ -46,7 +46,7 @@ macro_rules! field {
 }
 
 // in theory could make macro arounds enums to get all variants, but seems to intrusive for now (expecially if some enum is very generic for use case)
-field_matcher!(get_match, Product, AB, XY, &str; A, B; X, Y);
+enum_field_match!(get_match, Product, AB, XY, &str; A, B; X, Y);
 
 #[derive(Clone, Copy)]
 pub enum AB {
@@ -79,12 +79,12 @@ fn main() {
     };
 
     {
-        assert_eq!(product.a_x, field!(product.A _ X).as_str());
+        assert_eq!(product.a_x, enum_filed_use!(product.A _ X).as_str());
     }
     {
         let a_x = product.a_x.clone();
-        assert_eq!(a_x, field!(mut product.A _ X).as_str());
-        let setter = field!(mut product.A _ X);
+        assert_eq!(a_x, enum_filed_use!(mut product.A _ X).as_str());
+        let setter = enum_filed_use!(mut product.A _ X);
         *setter = "new_a_x".to_string();
     }
     let matcher = get_match(AB::A, XY::X);
