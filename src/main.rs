@@ -1,4 +1,6 @@
+
 // unfortunately could not exand depth and at same time grabbing previous idents (tried tt muncher too)
+// also attempt to export macro from macro with many inputs hard without #![feature(macro_metavar_expr)]
 #[macro_export]
 macro_rules! enum_field_match {
     ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident ) => {
@@ -10,6 +12,7 @@ macro_rules! enum_field_match {
         }
     };
     ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident, $j2:ident ) => {
+        //NOTE: must be macro to handle heteregeneous return types
         fn $name(ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
             move |this| match (ab, xy) {
                 (<$ab>::$i1, <$xy>::$j1) => field!(this . $i1 _ $j1),
@@ -63,9 +66,9 @@ pub enum XY {
 #[derive(Debug)]
 pub struct Product {
     pub a_x: String,
-    pub a_y: String,
+    pub a_y: u8,
     pub b_x: String,
-    pub b_y: String,
+    pub b_y: u8,
 }
 
 fn main() {
@@ -87,7 +90,7 @@ fn main() {
         let setter = enum_filed_use!(mut product.A _ X);
         *setter = "new_a_x".to_string();
     }
-    let matcher = get_match(AB::A, XY::X);
+    let matcher = get_match!(AB::A, XY::X);
     assert_eq!(product.a_x, matcher(&product));
     println!("{product:?}");
 }
