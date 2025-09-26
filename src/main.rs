@@ -1,28 +1,47 @@
 #[macro_export]
-macro_rules! field {
-    ($self:ident . $side:ident _ $kind:ident) => {
-        ::paste::paste! {
-            $self.[<$side:snake _ $kind:snake>]
+macro_rules! field_matcher {
+    ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident ) => {
+        fn $name(ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
+            move |this| match (ab, xy) {
+                (<$ab>::$i1, <$xy>::$j1) => &this.a_x,
+                (<$ab>::$i2, <$xy>::$j1) => &this.b_x,
+            }
         }
     };
-    ($ab:ident, $xy:ident) => {
-        move |product| match ($ab, $xy) {
-            (AB::A, XY::X) => &product.a_x,
-            (AB::A, XY::Y) => &product.a_y,
-            (AB::B, XY::X) => &product.b_x,
-            (AB::B, XY::Y) => &product.b_y,
+    ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident, $j2:ident ) => {
+        fn $name(ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
+            move |this| match (ab, xy) {
+                (<$ab>::$i1, <$xy>::$j1) => field!(this . $i1 _ $j1),
+                (<$ab>::$i2, <$xy>::$j1) =>  field!(this . $i2 _ $j1),
+                (<$ab>::$i1, <$xy>::$j2) =>  field!(this . $i1 _ $j2),
+                (<$ab>::$i2, <$xy>::$j2) =>   field!(this . $i2 _ $j2),
+            }
         }
     };
 }
 
-pub fn get_match(ab: AB, xy: XY) -> impl Fn(&Product) -> &str {
-    field!(ab, xy)
+field_matcher!(get_match, Product, AB, XY, &str; A, B; X, Y);
+
+#[macro_export]
+macro_rules! field {
+    ($self:ident . $side:ident _ $kind:ident) => {
+        ::paste::paste! {
+            &$self.[<$side:snake _ $kind:snake>]
+        }
+    };
+    (mut $self:ident . $side:ident _ $kind:ident) => {
+        ::paste::paste! {
+            &mut $self.[<$side:snake _ $kind:snake>]
+        }
+    };
 }
+
 #[derive(Clone, Copy)]
 pub enum AB {
     A,
     B,
 }
+
 #[derive(Clone, Copy)]
 pub enum XY {
     X,
@@ -38,15 +57,24 @@ pub struct Product {
 }
 
 fn main() {
-    let product = Product {
+    use AB::*;
+    use XY::*;
+    let mut product = Product {
         a_x: "a_x".to_string(),
         a_y: "a_y".to_string(),
         b_x: "b_x".to_string(),
         b_y: "b_y".to_string(),
     };
 
-    assert_eq!(product.a_x, field!(product.A _ X));
-
+    {
+        assert_eq!(product.a_x, field!(product.A _ X).as_str());
+    }
+    {
+        let a_x = product.a_x.clone();
+        assert_eq!(a_x, field!(mut product.A _ X).as_str());
+        let setter = field!(mut product.A _ X);
+        *setter = "new_a_x".to_string();
+    }
     let matcher = get_match(AB::A, XY::X);
     assert_eq!(product.a_x, matcher(&product));
     println!("{product:?}");
