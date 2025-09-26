@@ -31,5 +31,9 @@ let item = get_match(B, X)(&product);
 assert_eq!(item, "bx");
 ```
 
-in generic way via declarative macro.
+in generic way via declarative macro, so that:
+- AB and XY enums could be in different crates(or at least modules), so under my full control
+- mut variants for accessors
+- AB and XY can add more variants in easy way
 
+I assume it is possible with declarative macro, but prove of impossiblity also good solution.
