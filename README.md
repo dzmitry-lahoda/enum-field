@@ -39,6 +39,8 @@ I assume it is possible with declarative macro, but prove of impossiblity also g
 
 TLDR; Non intrisuvie macro with manual list of variants for few variants enums was done. 
 
+$$ hack with $dollar cannot form exported macro name via $dollar nor macro can be invoked under other macro to return just boidy without name.
+
 I feel like this handling such case can be done in Haskell, may be via TypeClasses.
 
 In Rust, to have heterogenous fileds types need macro export from macro.

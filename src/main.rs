@@ -2,7 +2,7 @@
 // unfortunately could not exand depth and at same time grabbing previous idents (tried tt muncher too)
 // also attempt to export macro from macro with many inputs hard without #![feature(macro_metavar_expr)]
 #[macro_export]
-macro_rules! enum_field_match {
+macro_rules! enum_field_match2 {
     ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident ) => {
         fn $name(ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
             move |this| match (ab, xy) {
@@ -35,20 +35,58 @@ macro_rules! enum_field_match {
 }
 
 #[macro_export]
-macro_rules! test2 {
-    // single field for one variant enum
-    ($name:ident ($a0: ident)) => {
-        test2!{#internal $name $a0 $}
-    };
-    (#internal $name:ident $a0:ident $dollar:tt) => {
-        macro_rules! $dollar name  {
-            ($dollar this . $dollar a:ident) => {
-                match $dollar a {
-                    $a0 => 
-                }
-            };
+macro_rules! make_matcher {
+    ($name:ident, $fragment_type:ident, $d:tt) => {
+        #[macro_export]
+        macro_rules! $name {
+            ($d _:$fragment_type) => { true };
+            (const { 0 }) => { false };
         }
     };
+}
+
+make_matcher!(is_expr_from_2021, expr, $);
+
+#[macro_export]
+macro_rules! enum_field_match {
+    ($name:ident, $a0:ident, $d:tt) => {   
+        ::paste::paste! {
+            #[macro_export]
+            macro_rules! $name {
+                ($a:expr) => {
+                    match  $a {
+                        $a0 => { println!("a0");} 
+                    }
+                };
+            }
+        }
+    };
+    ($name:ident, $a0:ident, $a1:ident, $d:tt) => {   
+        ::paste::paste! {
+            #[macro_export]
+            macro_rules! $name {
+                ($a:expr) => {
+                    match  $a {
+                        $a0 => { println!("a0");} 
+                        $a1 => { println!("a1");} 
+                    }
+                };
+            }
+        }
+    };
+    ($name:ident, [$a0:ident, $a1:ident], $b0:ident, $d:tt) => {   
+        ::paste::paste! {
+            #[macro_export]
+            macro_rules! $name {
+                ($a:expr,$b:expr) => {
+                    match  ($a,$b) {
+                        ($a0, $b0) => { println!("a0,b0");} 
+                        ($a1, $b0) => { println!("a1,b0");} 
+                    }
+                };
+            }
+        }
+    };    
 }
 
 #[macro_export]
@@ -57,26 +95,11 @@ macro_rules! test1 {
 
          $a0
     };
-//     ($a0:ident; b0:ident) => {
-//         $a0
-//    };
-//     ([$a0:ident]) => {
-//         test1!($a0)
-//     };
-//     ([$a0:ident], [$b0:ident]) => {
-//         $a0 + $b0
-//     };
-//     ([$a0:ident, $a1:ident], ) => {
-//         match 
-//     };
-//     ([$a0:ident, $a1:ident, $a2:ident], $rest:tt) => {
-        
-//     };
 }
 
 /// Combines one or more unit enums idents to form snake cases enum name.
 #[macro_export]
-macro_rules! enum_filed_use {
+macro_rules! enum_field_use {
     ($self:ident . $a:ident) => {
         ::paste::paste! {
             &$self.[<$a:snake>]
@@ -138,8 +161,8 @@ pub struct Product {
 fn main() {
     use AB::*;
     use XY::*;
-    test2!(A);
-    test3!(B);
+    enum_field_match!(match_ab_field, [A, B], X, $);
+    match_ab_field!(AB::B, XY::X);
     let mut product = Product {
         a_x: "a_x".to_string(),
         a_y: 1,
@@ -148,12 +171,12 @@ fn main() {
     };
 
     {
-        assert_eq!(product.a_x, enum_filed_use!(product.A _ X).as_str());
+        assert_eq!(product.a_x, enum_field_use!(product.A _ X).as_str());
     }
     // {
     //     let a_x = product.a_x.clone();
-    //     assert_eq!(a_x, enum_filed_use!(mut product.A _ X).as_str());
-    //     let setter = enum_filed_use!(mut product.A _ X);
+    //     assert_eq!(a_x, enum_field_use!(mut product.A _ X).as_str());
+    //     let setter = enum_field_use!(mut product.A _ X);
     //     *setter = "new_a_x".to_string();
     // }
     // let matcher = get_match!(AB::A, XY::X);
