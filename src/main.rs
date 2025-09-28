@@ -36,13 +36,16 @@ macro_rules! enum_field_match {
 
 #[macro_export]
 macro_rules! test2 {
-    ($a0: ident) => {
-        test2!{#internal $a0 $}
+    // single field for one variant enum
+    ($name:ident ($a0: ident)) => {
+        test2!{#internal $name $a0 $}
     };
-    (#internal $a0:ident $dollar:tt) => {
-        macro_rules! test3 {
-            ($dollar a1:ident) => {
-                $a0
+    (#internal $name:ident $a0:ident $dollar:tt) => {
+        macro_rules! $dollar name  {
+            ($dollar this . $dollar a:ident) => {
+                match $dollar a {
+                    $a0 => 
+                }
             };
         }
     };
@@ -71,16 +74,37 @@ macro_rules! test1 {
 //     };
 }
 
+/// Combines one or more unit enums idents to form snake cases enum name.
 #[macro_export]
 macro_rules! enum_filed_use {
-    ($self:ident . $ab:ident _ $xy:ident) => {
+    ($self:ident . $a:ident) => {
         ::paste::paste! {
-            &$self.[<$ab:snake _ $xy:snake>]
+            &$self.[<$a:snake>]
+        }
+    };    
+    (mut $self:ident . $a:ident) => {
+        ::paste::paste! {
+            &mut $self.[<$a:snake>]
+        }
+    };        
+    ($self:ident . $a:ident _ $b:ident) => {
+        ::paste::paste! {
+            &$self.[<$a:snake _ $b:snake>]
         }
     };
-    (mut $self:ident . $ab:ident _ $xy:ident) => {
+    (mut $self:ident . $a:ident _ $b:ident) => {
         ::paste::paste! {
-            &mut $self.[<$ab:snake _ $xy:snake>]
+            &mut $self.[<$a:snake _ $b:snake>]
+        }
+    };
+    ($self:ident . $a:ident _ $b:ident _ $c:ident) => {
+        ::paste::paste! {
+            &$self.[<$a:snake _ $b:snake _ $c:snake>]
+        }
+    };
+    (mut $self:ident . $a:ident _ $b:ident _ $c:ident) => {
+        ::paste::paste! {
+            &mut $self.[<$a:snake _ $b:snake _ $c:snake>]
         }
     };
 }
