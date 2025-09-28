@@ -1,51 +1,39 @@
 
-// unfortunately could not exand depth and at same time grabbing previous idents (tried tt muncher too)
-// also attempt to export macro from macro with many inputs hard without #![feature(macro_metavar_expr)]
-#[macro_export]
-macro_rules! enum_field_match2 {
-    ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident ) => {
-        fn $name(ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
-            move |this| match (ab, xy) {
-                (<$ab>::$i1, <$xy>::$j1) => &this.a_x,
-                (<$ab>::$i2, <$xy>::$j1) => &this.b_x,
-            }
-        }
-    };
-    ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident, $j2:ident ) => {
-        //NOTE: must be macro to handle heteregeneous return types
-        fn $name(ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
-            move |this| match (ab, xy) {
-                (<$ab>::$i1, <$xy>::$j1) => field!(this . $i1 _ $j1),
-                (<$ab>::$i2, <$xy>::$j1) =>  field!(this . $i2 _ $j1),
-                (<$ab>::$i1, <$xy>::$j2) =>  field!(this . $i1 _ $j2),
-                (<$ab>::$i2, <$xy>::$j2) =>   field!(this . $i2 _ $j2),
-            }
-        }
-        ::paste::paste! {
-            fn [<$name _ mut>](ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
-                move |this| match (ab, xy) {
-                    (<$ab>::$i1, <$xy>::$j1) => field!(this . $i1 _ $j1),
-                    (<$ab>::$i2, <$xy>::$j1) =>  field!(this . $i2 _ $j1),
-                    (<$ab>::$i1, <$xy>::$j2) =>  field!(this . $i1 _ $j2),
-                    (<$ab>::$i2, <$xy>::$j2) =>   field!(this . $i2 _ $j2),
-                }
-            }
-        }
-    };
-}
+// // unfortunately could not exand depth and at same time grabbing previous idents (tried tt muncher too)
+// // also attempt to export macro from macro with many inputs hard without #![feature(macro_metavar_expr)]
+// #[macro_export]
+// macro_rules! enum_field_match2 {
+//     ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident ) => {
+//         fn $name(ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
+//             move |this| match (ab, xy) {
+//                 (<$ab>::$i1, <$xy>::$j1) => &this.a_x,
+//                 (<$ab>::$i2, <$xy>::$j1) => &this.b_x,
+//             }
+//         }
+//     };
+//     ($name:ident, $this:ty, $ab:ty, $xy:ty, $r:ty; $i1:ident, $i2:ident; $j1:ident, $j2:ident ) => {
+//         //NOTE: must be macro to handle heteregeneous return types
+//         fn $name(ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
+//             move |this| match (ab, xy) {
+//                 (<$ab>::$i1, <$xy>::$j1) => field!(this . $i1 _ $j1),
+//                 (<$ab>::$i2, <$xy>::$j1) =>  field!(this . $i2 _ $j1),
+//                 (<$ab>::$i1, <$xy>::$j2) =>  field!(this . $i1 _ $j2),
+//                 (<$ab>::$i2, <$xy>::$j2) =>   field!(this . $i2 _ $j2),
+//             }
+//         }
+//         ::paste::paste! {
+//             fn [<$name _ mut>](ab: $ab, xy: $xy) -> impl Fn(&$this) -> $r {
+//                 move |this| match (ab, xy) {
+//                     (<$ab>::$i1, <$xy>::$j1) => field!(this . $i1 _ $j1),
+//                     (<$ab>::$i2, <$xy>::$j1) => field!(this . $i2 _ $j1),
+//                     (<$ab>::$i1, <$xy>::$j2) => field!(this . $i1 _ $j2),
+//                     (<$ab>::$i2, <$xy>::$j2) => field!(this . $i2 _ $j2),
+//                 }
+//             }
+//         }
+//     };
+// }
 
-#[macro_export]
-macro_rules! make_matcher {
-    ($name:ident, $fragment_type:ident, $d:tt) => {
-        #[macro_export]
-        macro_rules! $name {
-            ($d _:$fragment_type) => { true };
-            (const { 0 }) => { false };
-        }
-    };
-}
-
-make_matcher!(is_expr_from_2021, expr, $);
 
 #[macro_export]
 macro_rules! enum_field_match {
@@ -86,15 +74,22 @@ macro_rules! enum_field_match {
                 };
             }
         }
-    };    
-}
-
-#[macro_export]
-macro_rules! test1 {
-    ($a0:ident) => {
-
-         $a0
-    };
+    }; 
+    ($name:ident, [$a0:ident, $a1:ident], [$b0:ident,$b1:ident], $d:tt) => {   
+        ::paste::paste! {
+            #[macro_export]
+            macro_rules! $name {
+                ($this:ident,$a:expr,$b:expr,$body:expr) => {
+                    match  ($a,$b) {
+                        ($a0, $b0) => $body(enum_field_use!($this . $a0 _ $b0)), 
+                        ($a1, $b0) => $body(enum_field_use!($this . $a1 _ $b0)),
+                        ($a0, $b1) => $body(enum_field_use!($this . $a0 _ $b1)), 
+                        ($a1, $b1) => $body(enum_field_use!($this . $a1 _ $b1)),
+                    }
+                };
+            }
+        }
+    };        
 }
 
 /// Combines one or more unit enums idents to form snake cases enum name.
@@ -132,8 +127,6 @@ macro_rules! enum_field_use {
     };
 }
 
-// in theory could make macro arounds enums to get all variants, but seems to intrusive for now (expecially if some enum is very generic for use case)
-// enum_field_match!(get_match, Product, AB, XY, &str; A, B; X, Y);
 
 #[derive(Clone, Copy)]
 pub enum AB {
@@ -155,21 +148,18 @@ pub struct Product {
     pub b_y: u8,
 }
 
-
-
-
 fn main() {
     use AB::*;
     use XY::*;
-    enum_field_match!(match_ab_field, [A, B], X, $);
-    match_ab_field!(AB::B, XY::X);
+    enum_field_match!(match_ab_field, [A, B],[X,Y], $);
     let mut product = Product {
         a_x: "a_x".to_string(),
         a_y: 1,
         b_x: "b_x".to_string(),
         b_y: 2,
     };
-
+    
+    match_ab_field!(product, AB::B, XY::X, |field| println!("{field:?}") );
     {
         assert_eq!(product.a_x, enum_field_use!(product.A _ X).as_str());
     }
