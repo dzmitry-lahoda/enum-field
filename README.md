@@ -1,4 +1,3 @@
-
 Given
 
 ```rust
@@ -13,7 +12,7 @@ struct Product {
 }
 ```
 
-allow to
+allows to
 
 ```rust
 use AB::*;
