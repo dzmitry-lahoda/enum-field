@@ -19,7 +19,7 @@ macro_rules! enum_field_match {
         ::paste::paste! {
             #[macro_export]
             macro_rules! $name {
-                ($a:expr) => {
+                ($this:ident,$a:expr, $body:expr) => {
                     match  $a {
                         ($a0) => $body(enum_field_use!($this . $a0)), 
                         ($a1) => $body(enum_field_use!($this . $a1)),
@@ -35,7 +35,7 @@ macro_rules! enum_field_match {
         ::paste::paste! {
             #[macro_export]
             macro_rules! $name {
-                ($a:expr,$b:expr) => {
+                ($this:ident,$a:expr,$b:expr, $body:expr) => {
                     match  ($a,$b) {
                         ($a0, $b0) => $body(enum_field_use!($this . $a0 _ $b0)), 
                         ($a1, $b0) => $body(enum_field_use!($this . $a1 _ $b0)),
@@ -43,24 +43,57 @@ macro_rules! enum_field_match {
                 };
             }
         }
-    }; 
+    };
     ($name:ident, [$a0:ident, $a1:ident], [$b0:ident,$b1:ident]) => {
         enum_field_match!($name, [$a0, $a1], [$b0, $b1], $);
-    };  
+    };
     ($name:ident, [$a0:ident, $a1:ident], [$b0:ident,$b1:ident], $d:tt) => {   
             /// Allows to access field on `this` by enums (a, b) values within closure `body`
             #[macro_export]
             macro_rules! $name {
-                ($this:ident,$a:expr,$b:expr, $body:expr) => {
+                // type is because rust cannot infer type in closure even with body hints...
+                ($this:ident.$a:ident _ $b:ident <- |$param:ident| $body:expr) => {
                     match  ($a,$b) {
-                        ($a0, $b0) => $body(enum_field_use!($this . $a0 _ $b0)), 
-                        ($a1, $b0) => $body(enum_field_use!($this . $a1 _ $b0)),
-                        ($a0, $b1) => $body(enum_field_use!($this . $a0 _ $b1)), 
-                        ($a1, $b1) => $body(enum_field_use!($this . $a1 _ $b1)),
+                        ($a0, $b0) => { 
+                            let $param = enum_field_use!($this . $a0 _ $b0);
+                            $body
+                        },
+                        ($a0, $b1) => { 
+                            let $param = enum_field_use!($this . $a0 _ $b1);
+                            $body
+                        },
+                        ($a1, $b0) => { 
+                            let $param = enum_field_use!($this . $a1 _ $b0);
+                            $body
+                        },
+                        ($a1, $b1) => { 
+                            let $param = enum_field_use!($this . $a1 _ $b1);
+                            $body
+                        }
+                    }
+                };
+                (mut $this:ident.$a:ident _ $b:ident <- |$param:ident| $body:expr) => {
+                    match  ($a,$b) {
+                        ($a0, $b0) => { 
+                            let mut $param = enum_field_use!(mut $this . $a0 _ $b0);
+                            $body
+                        },
+                        ($a0, $b1) => { 
+                            let mut $param = enum_field_use!(mut $this . $a0 _ $b1);
+                            $body
+                        },
+                        ($a1, $b0) => { 
+                            let mut $param = enum_field_use!(mut $this . $a1 _ $b0);
+                            $body
+                        },
+                        ($a1, $b1) => { 
+                            let mut $param = enum_field_use!(mut $this . $a1 _ $b1);
+                            $body
+                        }
                     }
                 };
             }
-    };        
+    };
 }
 
 // TODO: simplyfi $$ by using feature(macro_metavar_expr) after stabilization

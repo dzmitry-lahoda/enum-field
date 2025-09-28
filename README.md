@@ -26,25 +26,13 @@ assert_eq!(item, "bx");
 ```
 
 in generic way via declarative macro, so that:
-- AB and XY enums could be in different crates(or at least modules), so under my full control
-- mut variants for accessors
-- AB and XY can add more variants in easy way
-- fields can be different return type
+- AB and XY enums could be in different crates
+- mut variants for field accessors
+- AB and XY can be up to 3 variants each and above
+- fields can be different(heteregenous) return type
 - works on latest stable
 
-I assume it is possible with declarative macro, but prove of impossiblity also good solution.
 
-## Results
+## Alternatives
 
-TLDR; Non intrisuvie macro with manual list of variants for few variants enums was done. 
-
-$$ hack with $dollar cannot form exported macro name via $dollar nor macro can be invoked under other macro to return just boidy without name.
-
-I feel like this handling such case can be done in Haskell, may be via TypeClasses.
-
-In Rust, to have heterogenous fileds types need macro export from macro.
-
-In macro cannot expand `list` of values and then tt muncher, says tt muncher is less deep
-nor cannot avoid manual enumartion of units(without being intrusive).
-
-Wait for https://github.com/rust-lang/rust/issues/83527 and try again to improve macro. 
+Can functional crates in Rust do above?
