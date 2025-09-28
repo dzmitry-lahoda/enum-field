@@ -18,11 +18,10 @@ allows to
 use AB::*;
 use XY::*;
 let product = Product { b_x: "b_x".to_string(), a_y: 2, .. }; 
-let item = field_use!(product . B _ X);
+let item = enum_field_use!(product . B _ X);
 assert_eq!(item, "bx");
 
-let item = field_match(B, X)(&product);
-assert_eq!(item, "bx");
+let item = enum_field_match_ab(&product.  A _ X, |x| println!("{x}"));
 ```
 
 in generic way via declarative macro, so that:
@@ -32,6 +31,11 @@ in generic way via declarative macro, so that:
 - fields can be different(heteregenous) return type
 - works on latest stable
 
+
+but:
+- if only shared traits used for all fields types, can compile as is
+- if types used directly, but provide coproduct (MyCoProduct::from) for each field type
+  - it is better then doing each field coproduct because prevents setting bad field type
 
 ## Alternatives
 

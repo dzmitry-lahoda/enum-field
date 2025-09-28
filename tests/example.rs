@@ -14,6 +14,8 @@ pub enum XY {
 
 enum_field_match!(match_ab_field, [A, B], [X, Y]);
 
+enum_field_match!(match_ab_field_co, [A, B], [X, Y], u32);
+
 #[derive(Debug)]
 pub struct Product {
     pub a_x: String,
