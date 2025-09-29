@@ -34,8 +34,8 @@ in generic way via declarative macro, so that:
 
 but:
 - if only shared traits used for all fields types, can compile as is
-- if types used directly, but provide coproduct (MyCoProduct::from) for each field type
-  - it is better then doing each field coproduct because prevents setting bad field type
+- if types used directly, but provide coproduct (MyStruct::from) for each field type
+  - it is better then doing each field to be enum(coproduct) because cannot set bad field variant
 
 ## Alternatives
 

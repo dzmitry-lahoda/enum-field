@@ -33,22 +33,20 @@ impl Shared for String {
     fn casted_to_shared_trait(&self) {
         println!("String: {self}");
     }
-    
+
     fn casted_to_shared_trait_mut(&mut self) {
-        *self = self.clone() + self.as_str(); 
+        *self = self.clone() + self.as_str();
     }
-    
 }
 
 impl Shared for u8 {
     fn casted_to_shared_trait(&self) {
         println!("u8: {self}");
     }
-    
+
     fn casted_to_shared_trait_mut(&mut self) {
         *self += *self * 2;
     }
-    
 }
 
 #[test]
@@ -63,7 +61,7 @@ fn example() {
         b_y: 2,
     };
 
-    let a= A;
+    let a = A;
     let b = X;
 
     match_ab_field!(product.a _ b <- |selected| selected.casted_to_shared_trait());
@@ -76,6 +74,6 @@ fn example() {
         let setter = enum_field_use!(mut product.A _ X);
         *setter = "new_a_x".to_string();
     }
-    
+
     match_ab_field!(mut product.a _ b <- |selected| selected.casted_to_shared_trait_mut());
 }
