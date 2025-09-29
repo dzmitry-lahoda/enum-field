@@ -17,7 +17,7 @@ macro_rules! enum_field_match {
     };
     ($name:ident, $a0:ident, $a1:ident, $d:tt) => {
         ::paste::paste! {
-            #[macro_export]
+            #[cfg_attr(feature = "macro-export", macro_export)]
             macro_rules! $name {
                 ($this:ident,$a:expr, $body:expr) => {
                     match  $a {
@@ -33,7 +33,7 @@ macro_rules! enum_field_match {
     };
     ($name:ident, [$a0:ident, $a1:ident], $b0:ident, $d:tt) => {
         ::paste::paste! {
-            #[macro_export]
+            #[cfg_attr(feature = "macro-export", macro_export)]
             macro_rules! $name {
                 ($this:ident,$a:expr,$b:expr, $body:expr) => {
                     match  ($a,$b) {
@@ -49,7 +49,7 @@ macro_rules! enum_field_match {
     };
     ($name:ident, [$a0:ident, $a1:ident], [$b0:ident,$b1:ident], $coproduct:ty, $d:tt) => {
         /// Allows accessing a field on `this` by enum values (a, b) within the closure `body`
-        #[macro_export]
+        #[cfg_attr(feature = "macro-export", macro_export)]
         macro_rules! $name {
             ($this:ident.$a:ident _ $b:ident <- |$param:ident| $body:expr) => {
                 match  ($a,$b) {
@@ -98,7 +98,7 @@ macro_rules! enum_field_match {
     };
     ($name:ident, [$a0:ident, $a1:ident], [$b0:ident,$b1:ident], $d:tt) => {
             /// Allows accessing a field on `this` by enum values (a, b) within the closure `body`
-            #[macro_export]
+            #[cfg_attr(feature = "macro-export", macro_export)]
             macro_rules! $name {
                 ($this:ident.$a:ident _ $b:ident <- |$param:ident| $body:expr) => {
                     match  ($a,$b) {
