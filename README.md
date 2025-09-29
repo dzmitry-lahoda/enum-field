@@ -24,19 +24,19 @@ assert_eq!(item, "bx");
 let item = enum_field_match_ab(&product.  A _ X, |x| println!("{x}"));
 ```
 
-in generic way via declarative macro, so that:
+in a generic way via a declarative macro, so that:
 - AB and XY enums could be in different crates
 - mut variants for field accessors
 - AB and XY can be up to 3 variants each and above
-- fields can be different(heteregenous) return type
+- fields can be different (heterogeneous) return types
 - works on latest stable
 
 
 but:
-- if only shared traits used for all fields types, can compile as is
-- if types used directly, but provide coproduct (MyStruct::from) for each field type
-  - it is better then doing each field to be enum(coproduct) because cannot set bad field variant
+- if only shared traits are used for all field types, it can compile as-is
+- if types are used directly, provide a coproduct (e.g., `MyStruct::from`) for each field type
+  - it is better than making each field an enum (coproduct) because you cannot set a bad field variant
 
 ## Alternatives
 
-Can functional crates in Rust do above?
+Can functional crates in Rust do the above?

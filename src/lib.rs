@@ -1,15 +1,15 @@
-/// Generates heterogeneous field accessor by enum variants values.
-/// $name - name of the generated macro
+/// Generates heterogeneous field accessors by enum variant values.
+/// `$name` - name of the generated macro
 ///
 /// Cases:
-/// `$a` - to access field by one enum signle variant value
+/// `$a` - access a field by one enum single variant value
 ///
 ///
-/// [a<1-3>] - comma separated variants of the first enum
+/// [a<1-3>] - comma-separated variants of the first enum
 ///
 ///
-/// [a<1-3>] - comma separated variants of the first enum
-/// [b<1-3>] - comma separated variants of the second enum
+/// [a<1-3>] - comma-separated variants of the first enum
+/// [b<1-3>] - comma-separated variants of the second enum
 #[macro_export]
 macro_rules! enum_field_match {
     ($name:ident, $a0:ident, $a1:ident) => {
@@ -48,7 +48,7 @@ macro_rules! enum_field_match {
         enum_field_match!($name, [$a0, $a1], [$b0, $b1], $coproduct, $);
     };
     ($name:ident, [$a0:ident, $a1:ident], [$b0:ident,$b1:ident], $coproduct:ty, $d:tt) => {
-        /// Allows to access field on `this` by enums (a, b) values within closure `body`
+        /// Allows accessing a field on `this` by enum values (a, b) within the closure `body`
         #[macro_export]
         macro_rules! $name {
             ($this:ident.$a:ident _ $b:ident <- |$param:ident| $body:expr) => {
@@ -97,7 +97,7 @@ macro_rules! enum_field_match {
         enum_field_match!($name, [$a0, $a1], [$b0, $b1], $);
     };
     ($name:ident, [$a0:ident, $a1:ident], [$b0:ident,$b1:ident], $d:tt) => {
-            /// Allows to access field on `this` by enums (a, b) values within closure `body`
+            /// Allows accessing a field on `this` by enum values (a, b) within the closure `body`
             #[macro_export]
             macro_rules! $name {
                 ($this:ident.$a:ident _ $b:ident <- |$param:ident| $body:expr) => {
@@ -144,10 +144,10 @@ macro_rules! enum_field_match {
     };
 }
 
-// TODO: simplyfi $$ by using feature(macro_metavar_expr) after stabilization
-// NOTE:unfortunately could not exand depth and at same time grabbing previous idents (tried tt muncher too)
+// TODO: simplify $$ by using feature(macro_metavar_expr) after stabilization
+// NOTE: unfortunately could not expand depth and at the same time grab previous idents (tried tt muncher too)
 
-/// Combines one or more unit enums idents to form snake cases enum name.
+/// Combines one or more unit-enum idents to form a snake_case field name.
 #[macro_export]
 macro_rules! enum_field_use {
     ($self:ident . $a:ident) => {
