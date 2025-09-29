@@ -64,16 +64,16 @@ fn example() {
     let a = A;
     let b = X;
 
-    match_ab_field!(product.a _ b <- |selected| selected.casted_to_shared_trait());
+    match_ab_field!(product, a _ b <- |selected| selected.casted_to_shared_trait());
     {
-        assert_eq!(product.a_x, enum_field_use!(product.A _ X).as_str());
+        assert_eq!(product.a_x, enum_field_use!(product, A _ X).as_str());
     }
     {
         let a_x = product.a_x.clone();
-        assert_eq!(a_x, enum_field_use!(mut product.A _ X).as_str());
-        let setter = enum_field_use!(mut product.A _ X);
+        assert_eq!(a_x, enum_field_use!(mut product,A _ X).as_str());
+        let setter = enum_field_use!(mut product,A _ X);
         *setter = "new_a_x".to_string();
     }
 
-    match_ab_field!(mut product.a _ b <- |selected| selected.casted_to_shared_trait_mut());
+    match_ab_field!(mut product, a _ b <- |selected| selected.casted_to_shared_trait_mut());
 }
