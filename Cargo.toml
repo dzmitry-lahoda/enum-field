@@ -2,6 +2,10 @@
 name = "enum-field"
 version = "0.1.0"
 edition = "2024"
+description = "Declarative macros for enum-based heterogeneous field accessors."
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/dzmitry-lahoda/enum-field"
 
 [dependencies]
 paste = { version = "1" }
