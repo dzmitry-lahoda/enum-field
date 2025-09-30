@@ -51,7 +51,7 @@ macro_rules! enum_field_match {
         /// Allows accessing a field on `this` by enum values (a, b) within the closure `body`
         #[cfg_attr(feature = "macro-export", macro_export)]
         macro_rules! $name {
-            (mut $this:expr, $a:ident _ $b:ident <- |$param:ident| $body:expr) => {
+            (mut $this:expr, $a:ident _ $b:ident , |$param:ident| $body:expr) => {
                 match  ($a,$b) {
                     ($a0, $b0) => {
                         let mut $param = $coproduct::from(enum_field_use!(mut $this , $a0 _ $b0));
@@ -71,7 +71,7 @@ macro_rules! enum_field_match {
                     }
                 }
             };            
-            ($this:expr,$a:ident _ $b:ident <- |$param:ident| $body:expr) => {
+            ($this:expr,$a:ident _ $b:ident , |$param:ident| $body:expr) => {
                 match  ($a,$b) {
                     ($a0, $b0) => {
                         let $param = $coproduct::from(enum_field_use!($this , $a0 _ $b0));
@@ -93,14 +93,14 @@ macro_rules! enum_field_match {
             };
         }
     };
-    ($name:ident, [$a0:ident, $a1:ident], [$b0:ident,$b1:ident]) => {
-        enum_field_match!($name, [$a0, $a1], [$b0, $b1], $);
+    ($name:ident, $A:ty {$a0:ident, $a1:ident}, $B:ty {$b0:ident,$b1:ident}) => {
+        enum_field_match!($name, $A{$a0, $a1}, $B{$b0, $b1}, $);
     };
-    ($name:ident, [$a0:ident, $a1:ident], [$b0:ident,$b1:ident], $d:tt) => {
+    ($name:ident, $A:ty {$a0:ident, $a1:ident}, $B:ty {$b0:ident,$b1:ident}, $d:tt) => {
             /// Allows accessing a field on `this` by enum values (a, b) within the closure `body`
             #[cfg_attr(feature = "macro-export", macro_export)]
             macro_rules! $name {
-                (mut $this:expr,$a:ident _ $b:ident <- |$param:ident| $body:expr) => {
+                (mut $this:expr,$a:ident _ $b:ident , |$param:ident| $body:expr) => {
                     match  ($a,$b) {
                         ($a0, $b0) => {
                             let mut $param = enum_field_use!(mut $this , $a0 _ $b0);
@@ -120,7 +120,7 @@ macro_rules! enum_field_match {
                         }
                     }
                 };                
-                ($this:expr,$a:ident _ $b:ident <- |$param:ident| $body:expr) => {
+                ($this:expr,$a:ident _ $b:ident , |$param:ident| $body:expr) => {
                     match  ($a,$b) {
                         ($a0, $b0) => {
                             let $param = enum_field_use!($this , $a0 _ $b0);
@@ -140,6 +140,16 @@ macro_rules! enum_field_match {
                         }
                     }
                 };
+            }
+
+            ::paste::paste! {
+                /// Constant product of all combinations of the enum variants
+                pub const [<$name:snake:upper>] : [($A, $B); 4] = [
+                    ($A::$a0, $B::$b0),
+                    ($A::$a0, $B::$b1),
+                    ($A::$a1, $B::$b0),
+                    ($A::$a1, $B::$b1),
+                ];
             }
     };
 }

@@ -12,7 +12,8 @@ pub enum XY {
     Y,
 }
 
-enum_field_match!(match_ab_field, [A, B], [X, Y]);
+
+enum_field_match!(match_ab_field, AB {A, B}, XY{X, Y});
 
 enum_field_match!(match_ab_field_co, [A, B], [X, Y], u32);
 
@@ -64,7 +65,7 @@ fn example() {
     let a = A;
     let b = X;
 
-    match_ab_field!(product, a _ b <- |selected| selected.casted_to_shared_trait());
+    match_ab_field!(product, a _ b , |selected| selected.casted_to_shared_trait());
     {
         assert_eq!(product.a_x, enum_field_use!(product, A _ X).as_str());
     }
@@ -75,5 +76,5 @@ fn example() {
         *setter = "new_a_x".to_string();
     }
 
-    match_ab_field!(mut product, a _ b <- |selected| selected.casted_to_shared_trait_mut());
+    match_ab_field!(mut product, a _ b , |selected| selected.casted_to_shared_trait_mut());
 }
