@@ -70,7 +70,7 @@ macro_rules! enum_field_match {
                         $body
                     }
                 }
-            };            
+            };
             ($this:expr,$a:ident _ $b:ident , |$param:ident| $body:expr) => {
                 match  ($a,$b) {
                     ($a0, $b0) => {
@@ -119,7 +119,31 @@ macro_rules! enum_field_match {
                             $body
                         }
                     }
-                };                
+                };
+                (($this:expr, mut $that:expr), $a:ident _ $b:ident , |($param_this:ident, $param_that:ident)| $body:expr) => {
+                    match  ($a,$b) {
+                        ($a0, $b0) => {
+                            let $param_this = enum_field_use!($this , $a0 _ $b0);
+                            let mut $param_that = enum_field_use!(mut $that , $a0 _ $b0);
+                            $body
+                        },
+                        ($a0, $b1) => {
+                            let $param_this = enum_field_use!($this , $a0 _ $b1);
+                            let mut $param_that = enum_field_use!(mut $that , $a0 _ $b1);
+                            $body
+                        },
+                        ($a1, $b0) => {
+                            let $param_this = enum_field_use!($this , $a1 _ $b0);
+                            let mut $param_that = enum_field_use!(mut $that , $a1 _ $b0);
+                            $body
+                        },
+                        ($a1, $b1) => {
+                            let $param_this = enum_field_use!($this , $a1 _ $b1);
+                            let mut $param_that = enum_field_use!(mut $that , $a1 _ $b1);
+                            $body
+                        }
+                    }
+                };
                 ($this:expr,$a:ident _ $b:ident , |$param:ident| $body:expr) => {
                     match  ($a,$b) {
                         ($a0, $b0) => {
@@ -175,12 +199,12 @@ macro_rules! enum_field_use {
         ::paste::paste! {
             &mut $self.[<$a:snake _ $b:snake _ $c:snake>]
         }
-    };     
+    };
     ($self:expr, $a:ident) => {
         ::paste::paste! {
             &$self.[<$a:snake>]
         }
-    };   
+    };
     ($self:expr, $a:ident _ $b:ident) => {
         ::paste::paste! {
             &$self.[<$a:snake _ $b:snake>]

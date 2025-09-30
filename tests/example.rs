@@ -12,8 +12,7 @@ pub enum XY {
     Y,
 }
 
-
-enum_field_match!(match_ab_field, AB {A, B}, XY{X, Y});
+enum_field_match!(match_ab_field, AB { A, B }, XY { X, Y });
 
 enum_field_match!(match_ab_field_co, [A, B], [X, Y], u32);
 
