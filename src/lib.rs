@@ -21,8 +21,8 @@ macro_rules! enum_field_match {
             macro_rules! $name {
                 ($this:expr,$a:expr, $body:expr) => {
                     match  $a {
-                        ($a0) => $body(enum_field_use!($this , $a0)),
-                        ($a1) => $body(enum_field_use!($this , $a1)),
+                        ($a0) => $body($crate::enum_field_use!($this , $a0)),
+                        ($a1) => $body($crate::enum_field_use!($this , $a1)),
                     }
                 };
             }
@@ -37,8 +37,8 @@ macro_rules! enum_field_match {
             macro_rules! $name {
                 ($this:expr,$a:expr,$b:expr, $body:expr) => {
                     match  ($a,$b) {
-                        ($a0, $b0) => $body(enum_field_use!($this , $a0 _ $b0)),
-                        ($a1, $b0) => $body(enum_field_use!($this , $a1 _ $b0)),
+                        ($a0, $b0) => $body($crate::enum_field_use!($this , $a0 _ $b0)),
+                        ($a1, $b0) => $body($crate::enum_field_use!($this , $a1 _ $b0)),
                     }
                 };
             }
@@ -74,19 +74,19 @@ macro_rules! enum_field_match {
             ($this:expr,$a:ident _ $b:ident , |$param:ident| $body:expr) => {
                 match  ($a,$b) {
                     ($a0, $b0) => {
-                        let $param = $coproduct::from(enum_field_use!($this , $a0 _ $b0));
+                        let $param = $coproduct::from($crate::enum_field_use!($this , $a0 _ $b0));
                         $body
                     },
                     ($a0, $b1) => {
-                        let $param = $coproduct::from(enum_field_use!($this , $a0 _ $b1));
+                        let $param = $coproduct::from($crate::enum_field_use!($this , $a0 _ $b1));
                         $body
                     },
                     ($a1, $b0) => {
-                        let $param = $coproduct::from(enum_field_use!($this , $a1 _ $b0));
+                        let $param = $coproduct::from($crate::enum_field_use!($this , $a1 _ $b0));
                         $body
                     },
                     ($a1, $b1) => {
-                        let $param = $coproduct::from(enum_field_use!($this , $a1 _ $b1));
+                        let $param = $coproduct::from($crate::enum_field_use!($this , $a1 _ $b1));
                         $body
                     }
                 }
@@ -123,19 +123,19 @@ macro_rules! enum_field_match {
                 ($this:expr,$a:ident _ $b:ident , |$param:ident| $body:expr) => {
                     match  ($a,$b) {
                         ($a0, $b0) => {
-                            let $param = enum_field_use!($this , $a0 _ $b0);
+                            let $param = $crate::enum_field_use!($this , $a0 _ $b0);
                             $body
                         },
                         ($a0, $b1) => {
-                            let $param = enum_field_use!($this , $a0 _ $b1);
+                            let $param = $crate::enum_field_use!($this , $a0 _ $b1);
                             $body
                         },
                         ($a1, $b0) => {
-                            let $param = enum_field_use!($this , $a1 _ $b0);
+                            let $param = $crate::enum_field_use!($this , $a1 _ $b0);
                             $body
                         },
                         ($a1, $b1) => {
-                            let $param = enum_field_use!($this , $a1 _ $b1);
+                            let $param = $crate::enum_field_use!($this , $a1 _ $b1);
                             $body
                         }
                     }
